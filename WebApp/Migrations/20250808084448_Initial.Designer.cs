@@ -12,7 +12,7 @@ using WebApp.Context;
 namespace WebApp.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20250808080542_Initial")]
+    [Migration("20250808084448_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -37,6 +37,10 @@ namespace WebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
@@ -49,14 +53,13 @@ namespace WebApp.Migrations
                     b.Property<int>("RoomId")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("SeriesId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
