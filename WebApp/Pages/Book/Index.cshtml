@@ -1,8 +1,37 @@
 ﻿@page
 @model Book.IndexModel
 @{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Booking List";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Booked By</th>
+            <th>Room</th>
+            <th>StartDate</th>
+            <th>EndDate</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model.Bookings)
+        {
+            <tr>
+                <td>@booking.Title</td>
+                <td>@booking.Employee.EmployeeName</td>
+                <td>@booking.Room.RoomName</td>
+                <td>@booking.StartDate</td>
+                <td>@booking.EndDate</td>
+                <td>
+                    <a asp-page="./Details" asp-route-id="@booking.BookingId">Details</a> |
+                    @* <a asp-asp-page="./Edit" asp-route-id="@booking.BookingId">Edit</a> | *@
+                    <a asp-page="./Cancel" asp-route-id="@booking.BookingId">Cancel</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

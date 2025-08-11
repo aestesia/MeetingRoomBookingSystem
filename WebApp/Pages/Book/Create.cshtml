@@ -1,0 +1,56 @@
+﻿@page
+@model WebApp.Pages.Book.CreateModel
+@{
+    ViewData["Title"] = "Book a Room";
+}
+
+<h2>Create Booking</h2>
+<form method="post">
+    <validation-summary model-only="true" class="text-danger"></validation-summary>
+    <div>
+        <label asp-for="BookingViewModel.EmployeeId"></label>
+        <input asp-for="BookingViewModel.EmployeeId" />
+        <span asp-validation-for="BookingViewModel.EmployeeId"></span>
+    </div>
+    <div>
+        <label asp-for="BookingViewModel.Email"></label>
+        <input asp-for="BookingViewModel.Email" />
+        <span asp-validation-for="BookingViewModel.Email"></span>
+    </div>
+    <div>
+        <label asp-for="BookingViewModel.RoomId"></label>
+        <input asp-for="BookingViewModel.RoomId" />
+        <span asp-validation-for="BookingViewModel.RoomId"></span>
+    </div>
+    <div>
+        <label asp-for="BookingViewModel.Title"></label>
+        <input asp-for="BookingViewModel.Title" />
+        <span asp-validation-for="BookingViewModel.Title"></span>
+    </div>
+    <div>
+        <label asp-for="BookingViewModel.NumOfAttendees"></label>
+        <input asp-for="BookingViewModel.NumOfAttendees" />
+        <span asp-validation-for="BookingViewModel.NumOfAttendees"></span>
+    </div>
+    <div>
+        <label asp-for="BookingViewModel.StartDate"></label>
+        <input asp-for="BookingViewModel.StartDate" />
+        <span asp-validation-for="BookingViewModel.StartDate"></span>
+    </div>
+    <div>
+        <label asp-for="BookingViewModel.EndDate"></label>
+        <input asp-for="BookingViewModel.EndDate" />
+        <span asp-validation-for="BookingViewModel.EndDate"></span>
+    </div>
+    <div>
+        <label asp-for="BookingViewModel.IsRecurring"></label>
+        <input asp-for="BookingViewModel.IsRecurring" type="checkbox" />
+        <span asp-validation-for="BookingViewModel.IsRecurring"></span>
+    </div>
+    
+    <button type="submit">Create</button>
+</form>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

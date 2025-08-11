@@ -1,0 +1,31 @@
+﻿@page
+@model WebApp.Pages.Book.CancelModel
+@{
+    ViewData["Title"] = "Cancel Booking";
+}
+<h2>Cancel Booking</h2>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+
+<form method="post">
+    <validation-summary mdoel-only="true" class="text-danger" />
+    <div>
+        <label asp-for="CancelBooking.BookingId"></label>
+        <input asp-for="CancelBooking.BookingId" readonly />
+        <span asp-validation-for="CancelBooking.BookingId"></span>
+    </div>
+    <div>
+        <label asp-for="CancelBooking.CancellationCode"></label>
+        <input asp-for="CancelBooking.CancellationCode" />
+        <span asp-validation-for="CancelBooking.CancellationCode"></span>
+    </div>
+
+    <button type="submit">Cancel Booking</button>
+</form>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
