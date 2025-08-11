@@ -60,6 +60,9 @@ namespace WebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("isCancelled")
+                        .HasColumnType("bit");
+
                     b.HasKey("BookingId");
 
                     b.HasIndex("EmployeeId");
@@ -98,7 +101,7 @@ namespace WebApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Amenitiies")
+                    b.Property<string>("Amenities")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

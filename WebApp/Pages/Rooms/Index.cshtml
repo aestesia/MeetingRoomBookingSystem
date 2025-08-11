@@ -1,0 +1,27 @@
+﻿@page
+@model Rooms.IndexModel
+@{
+    ViewData["Title"] = "Room List";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Capacity</th>
+            <th>Amenities</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model.Rooms)
+        {
+            <tr>
+                <td>@room.RoomName</td>
+                <td>@room.Capacity</td>
+                <td>@room.Amenities</td>
+            </tr>
+        }
+    </tbody>
+</table>

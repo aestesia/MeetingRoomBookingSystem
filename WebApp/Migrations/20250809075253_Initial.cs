@@ -33,7 +33,7 @@ namespace WebApp.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RoomName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
-                    Amenitiies = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Amenities = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,7 +54,8 @@ namespace WebApp.Migrations
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CancellationCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SeriesId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    SeriesId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    isCancelled = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

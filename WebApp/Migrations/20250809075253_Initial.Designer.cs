@@ -12,7 +12,7 @@ using WebApp.Context;
 namespace WebApp.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20250808084448_Initial")]
+    [Migration("20250809075253_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -63,6 +63,9 @@ namespace WebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("isCancelled")
+                        .HasColumnType("bit");
+
                     b.HasKey("BookingId");
 
                     b.HasIndex("EmployeeId");
@@ -101,7 +104,7 @@ namespace WebApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Amenitiies")
+                    b.Property<string>("Amenities")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

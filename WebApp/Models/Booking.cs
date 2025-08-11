@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApp.Models
 {
     public class Booking
     {
+        [Key]
         public int BookingId { get; set; }
         [ForeignKey("Room")]
         public int RoomId { get; set; }
@@ -16,6 +18,7 @@ namespace WebApp.Models
         public DateTime EndDate { get; set; }
         public string CancellationCode { get; set; }
         public Guid? SeriesId { get; set; } 
+        public bool isCancelled { get; set; }
 
         public Employee Employee { get; set; }
         public Room Room { get; set; }
