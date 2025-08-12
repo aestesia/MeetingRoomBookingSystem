@@ -11,7 +11,7 @@
 }
 
 <form method="post">
-    <validation-summary mdoel-only="true" class="text-danger" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div>
         <label asp-for="CancelBooking.BookingId"></label>
         <input asp-for="CancelBooking.BookingId" readonly />

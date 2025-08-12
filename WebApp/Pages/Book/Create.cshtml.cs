@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Context;
 using WebApp.Models;
+using WebApp.Services;
 using WebApp.ViewModel;
 
 namespace WebApp.Pages.Book
@@ -10,10 +11,12 @@ namespace WebApp.Pages.Book
     public class CreateModel : PageModel
     {
         private readonly MyContext myContext;
+        private readonly EmailService emailService;
 
-        public CreateModel(MyContext myContext)
+        public CreateModel(MyContext myContext, EmailService emailService)
         {
             this.myContext = myContext;
+            this.emailService = emailService;
         }
 
         [BindProperty]
@@ -62,6 +65,16 @@ namespace WebApp.Pages.Book
 
             myContext.Bookings.Add(booking);
             await myContext.SaveChangesAsync();
+
+            await emailService.SendBookingConfirmationAsync(
+                toEmail: BookingViewModel.Email,
+                employeeName: employee.EmployeeName,
+                bookingId: booking.BookingId.ToString(),
+                title: booking.Title,
+                startDate: booking.StartDate.ToString("yyyy-MM-dd HH:mm"), 
+                endDate: booking.EndDate.ToString("yyyy-MM-dd HH:mm"),
+                cancellationCode: booking.CancellationCode
+            );
 
             return RedirectToPage("/Home/Index");
         }

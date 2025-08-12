@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using WebApp.Configurations;
 using WebApp.Context;
+using WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MyContext>(option =>
@@ -7,6 +9,8 @@ builder.Services.AddDbContext<MyContext>(option =>
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<EmailService>();
 
 var app = builder.Build();
 
