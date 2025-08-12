@@ -65,11 +65,27 @@ namespace WebApp.Pages.Book
                     BookingViewModel.EndDate > x.StartDate.AddMinutes(-15)
                 )
             );
-
             if (isConflict)
             {
                 ModelState.AddModelError(string.Empty, "The selected room is not available due to another booking.");
                 return Page();
+            }
+
+            // Check Prime Time
+            DayOfWeek day = BookingViewModel.StartDate.DayOfWeek;
+            if (day >= DayOfWeek.Monday && day <= DayOfWeek.Friday)
+            {
+                var primeStart = BookingViewModel.StartDate.Date.AddHours(9);
+                var primeEnd = BookingViewModel.StartDate.Date.AddHours(12);
+                TimeSpan duration = BookingViewModel.EndDate - BookingViewModel.StartDate;
+                if (BookingViewModel.StartDate >= primeStart && BookingViewModel.StartDate < primeEnd)
+                {
+                    if (duration > TimeSpan.FromHours(1))
+                    {
+                        ModelState.AddModelError(string.Empty, "Booking from prime time (9 AM - 12 PM) cannot exceed 1 hour.");
+                        return Page();
+                    }
+                }
             }
 
             var booking = new Booking
