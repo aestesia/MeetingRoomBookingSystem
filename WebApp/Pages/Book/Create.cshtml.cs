@@ -24,11 +24,13 @@ namespace WebApp.Pages.Book
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-                return Page();
-
             var employee = await myContext.Employees.FirstOrDefaultAsync(e => 
             e.Id == BookingViewModel.EmployeeId && e.EmployeeEmail == BookingViewModel.Email);
+            
+            var room = await myContext.Rooms.FindAsync(BookingViewModel.RoomId);
+
+            if (!ModelState.IsValid)
+                return Page();
 
             if (employee == null)
             {
@@ -36,16 +38,37 @@ namespace WebApp.Pages.Book
                 return Page();
             }
 
-            var room = await myContext.Rooms.FindAsync(BookingViewModel.RoomId);
+            if (BookingViewModel.StartDate > BookingViewModel.EndDate)
+            {
+                ModelState.AddModelError(string.Empty, "Please enter valid Start Date and End Date");
+                return Page();
+            }
+
+            // Check Room Capacity
             if (room == null)
             {
                 ModelState.AddModelError("BookingViewModel.RoomId", "Room does not exist.");
                 return Page();
-            }
-
-            if(BookingViewModel.NumOfAttendees > room.Capacity)
+            }            
+            
+            if (BookingViewModel.NumOfAttendees > room.Capacity)
             {
                 ModelState.AddModelError("BookingViewModel.NumOfAttendees", $"Number of attendees exceeds room capacity ({room.Capacity}).");
+                return Page();
+            }
+
+            // Check Booking Buffer Time
+            var isConflict = await myContext.Bookings.AnyAsync(x =>
+                x.RoomId == BookingViewModel.RoomId && !x.isCancelled &&
+                (
+                    BookingViewModel.StartDate < x.EndDate.AddMinutes(15) &&
+                    BookingViewModel.EndDate > x.StartDate.AddMinutes(-15)
+                )
+            );
+
+            if (isConflict)
+            {
+                ModelState.AddModelError(string.Empty, "The selected room is not available due to another booking.");
                 return Page();
             }
 

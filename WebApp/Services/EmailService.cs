@@ -39,8 +39,9 @@ namespace WebApp.Services
             };
 
             using var smtp = new SmtpClient();
-            await smtp.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(emailSettings.Username, emailSettings.Password);
+            //await smtp.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, SecureSocketOptions.StartTls);
+            await smtp.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, emailSettings.EnableSsl);
+            //await smtp.AuthenticateAsync(emailSettings.Username, emailSettings.Password);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }
@@ -67,8 +68,9 @@ namespace WebApp.Services
             };
 
             using var smtp = new SmtpClient();
-            await smtp.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(emailSettings.Username, emailSettings.Password);
+            //await smtp.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, SecureSocketOptions.StartTls);
+            await smtp.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, emailSettings.EnableSsl);
+            //await smtp.AuthenticateAsync(emailSettings.Username, emailSettings.Password);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }
