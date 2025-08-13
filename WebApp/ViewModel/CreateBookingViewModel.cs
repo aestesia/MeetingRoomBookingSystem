@@ -2,6 +2,12 @@
 
 namespace WebApp.ViewModel
 {
+    public enum RecurrencePattern
+    {
+        Daily,
+        Weekly,
+        Monthly
+    }
     public class CreateBookingViewModel
     {
         public int EmployeeId { get; set; }
@@ -12,5 +18,7 @@ namespace WebApp.ViewModel
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public bool IsRecurring { get; set; }
+        public RecurrencePattern RecurrencePattern { get; set; }
+        public DateTime? RecurrenceEndDate { get; set; }
     }
 }

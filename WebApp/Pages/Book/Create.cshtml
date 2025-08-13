@@ -1,5 +1,6 @@
 ﻿@page
 @model WebApp.Pages.Book.CreateModel
+@using WebApp.ViewModel
 @{
     ViewData["Title"] = "Book a Room";
 }
@@ -44,8 +45,21 @@
     </div>
     <div>
         <label asp-for="BookingViewModel.IsRecurring"></label>
-        <input asp-for="BookingViewModel.IsRecurring" type="checkbox" />
+        <input asp-for="BookingViewModel.IsRecurring" type="checkbox" id="isRecurringCheckbox" />
         <span asp-validation-for="BookingViewModel.IsRecurring"></span>
+    </div>
+    <div id="recurrenceFields" style="display:none;">
+        <div>
+            <label asp-for="BookingViewModel.RecurrencePattern"></label>
+            <select asp-for="BookingViewModel.RecurrencePattern" asp-items="Html.GetEnumSelectList<RecurrencePattern>()"></select>
+            <span asp-validation-for="BookingViewModel.RecurrencePattern"></span>
+        </div>
+
+        <div>
+            <label asp-for="BookingViewModel.RecurrenceEndDate"></label>
+            <input asp-for="BookingViewModel.RecurrenceEndDate" type="date" />
+            <span asp-validation-for="BookingViewModel.RecurrenceEndDate"></span>
+        </div>
     </div>
     
     <button type="submit">Create</button>
@@ -53,4 +67,18 @@
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkbox = document.getElementById("isRecurringCheckbox");
+            const recurrenceFields = document.getElementById("recurrenceFields");
+
+            function toggleRecurrenceFields() {
+                recurrenceFields.style.display = checkbox.checked ? "block" : "none";
+            }
+
+            checkbox.addEventListener("change", toggleRecurrenceFields);
+            toggleRecurrenceFields();
+        });
+    </script>
 }

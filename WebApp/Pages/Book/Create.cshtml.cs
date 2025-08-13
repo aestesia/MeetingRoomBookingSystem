@@ -22,16 +22,71 @@ namespace WebApp.Pages.Book
         [BindProperty]
         public CreateBookingViewModel BookingViewModel { get; set; }
 
+        private async Task<(bool IsValid, string Error)> ValidateBookingsAsync(DateTime start, DateTime end, int roomId)
+        {
+            // Check Booking Buffer Time
+            bool isConflict = await myContext.Bookings.AnyAsync(x =>
+                x.RoomId == BookingViewModel.RoomId && !x.isCancelled &&
+                (
+                    BookingViewModel.StartDate < x.EndDate.AddMinutes(15) &&
+                    BookingViewModel.EndDate > x.StartDate.AddMinutes(-15)
+                )
+            );
+            if (isConflict)
+                return (false, "Room is unavailable at the selected time due to an existing booking.");
+
+            // Check Prime Time
+            DayOfWeek day = BookingViewModel.StartDate.DayOfWeek;
+            if (day >= DayOfWeek.Monday && day <= DayOfWeek.Friday)
+            {
+                var primeStart = BookingViewModel.StartDate.Date.AddHours(9);
+                var primeEnd = BookingViewModel.StartDate.Date.AddHours(12);
+                TimeSpan duration = BookingViewModel.EndDate - BookingViewModel.StartDate;
+                if (BookingViewModel.StartDate >= primeStart && BookingViewModel.StartDate < primeEnd)
+                {
+                    if (duration > TimeSpan.FromHours(1))
+                        return (false, "Booking during prime time (9 AM – 12 PM) cannot exceed 1 hour.");
+                }
+            }
+
+            return (true, null);
+        }
+
+        private List<(DateTime Start, DateTime End)> GenerateOccurrences(
+            DateTime start,
+            DateTime end,
+            RecurrencePattern pattern,
+            DateTime recurrenceEnd)
+        {
+            var occurences = new List<(DateTime Start, DateTime End)>();
+            var duration = end - start;
+            var currentStart = start;
+
+            while (currentStart <= recurrenceEnd)
+            {
+                var currentEnd = currentStart + duration;
+                
+                occurences.Add((currentStart, currentEnd));
+
+                currentStart = pattern switch
+                {
+                    RecurrencePattern.Daily => currentStart.AddDays(1),
+                    RecurrencePattern.Weekly => currentStart.AddDays(7),
+                    RecurrencePattern.Monthly => currentStart.AddMonths(1),
+                    _ => throw new ArgumentOutOfRangeException(nameof(pattern))
+                };
+            }
+            return occurences;
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
-            var employee = await myContext.Employees.FirstOrDefaultAsync(e => 
-            e.Id == BookingViewModel.EmployeeId && e.EmployeeEmail == BookingViewModel.Email);
-            
-            var room = await myContext.Rooms.FindAsync(BookingViewModel.RoomId);
-
             if (!ModelState.IsValid)
                 return Page();
 
+            var employee = await myContext.Employees.FirstOrDefaultAsync(e => 
+            e.Id == BookingViewModel.EmployeeId && e.EmployeeEmail == BookingViewModel.Email);
+            
             if (employee == null)
             {
                 ModelState.AddModelError(string.Empty, "Employee ID and Email do not match.");
@@ -45,6 +100,7 @@ namespace WebApp.Pages.Book
             }
 
             // Check Room Capacity
+            var room = await myContext.Rooms.FindAsync(BookingViewModel.RoomId);
             if (room == null)
             {
                 ModelState.AddModelError("BookingViewModel.RoomId", "Room does not exist.");
@@ -57,62 +113,74 @@ namespace WebApp.Pages.Book
                 return Page();
             }
 
-            // Check Booking Buffer Time
-            var isConflict = await myContext.Bookings.AnyAsync(x =>
-                x.RoomId == BookingViewModel.RoomId && !x.isCancelled &&
-                (
-                    BookingViewModel.StartDate < x.EndDate.AddMinutes(15) &&
-                    BookingViewModel.EndDate > x.StartDate.AddMinutes(-15)
-                )
-            );
-            if (isConflict)
+            //Handle Recurrence
+            List<(DateTime Start, DateTime End)> occurrences;
+            if (BookingViewModel.IsRecurring)
             {
-                ModelState.AddModelError(string.Empty, "The selected room is not available due to another booking.");
-                return Page();
-            }
-
-            // Check Prime Time
-            DayOfWeek day = BookingViewModel.StartDate.DayOfWeek;
-            if (day >= DayOfWeek.Monday && day <= DayOfWeek.Friday)
-            {
-                var primeStart = BookingViewModel.StartDate.Date.AddHours(9);
-                var primeEnd = BookingViewModel.StartDate.Date.AddHours(12);
-                TimeSpan duration = BookingViewModel.EndDate - BookingViewModel.StartDate;
-                if (BookingViewModel.StartDate >= primeStart && BookingViewModel.StartDate < primeEnd)
+                if (!BookingViewModel.RecurrenceEndDate.HasValue || BookingViewModel.RecurrenceEndDate <= BookingViewModel.StartDate)
                 {
-                    if (duration > TimeSpan.FromHours(1))
-                    {
-                        ModelState.AddModelError(string.Empty, "Booking from prime time (9 AM - 12 PM) cannot exceed 1 hour.");
-                        return Page();
-                    }
+                    ModelState.AddModelError("BookingViewModel.RecurrenceEndDate", "Invalid recurrence end date.");
+                    return Page();
                 }
+
+                occurrences = GenerateOccurrences(
+                    BookingViewModel.StartDate,
+                    BookingViewModel.EndDate,
+                    BookingViewModel.RecurrencePattern,
+                    BookingViewModel.RecurrenceEndDate.Value
+                );
+            }
+            else
+            {
+                occurrences = new List<(DateTime Start, DateTime End)>
+                {
+                    (BookingViewModel.StartDate, BookingViewModel.EndDate)
+                };
             }
 
-            var booking = new Booking
+            // Validate all occurences
+            foreach (var (start, end) in occurrences) 
             {
-                EmployeeId = BookingViewModel.EmployeeId,
-                RoomId = BookingViewModel.RoomId,
-                Title = BookingViewModel.Title,
-                NumOfAttendees = BookingViewModel.NumOfAttendees,
-                StartDate = BookingViewModel.StartDate,
-                EndDate = BookingViewModel.EndDate,
-                CancellationCode = Guid.NewGuid().ToString("N")[..8].ToUpper(),
-                isCancelled = false,
-                SeriesId = Guid.NewGuid(),
-                IsRecurring = BookingViewModel.IsRecurring
-            };
+                var (isValid, errorMessage) = await ValidateBookingsAsync(start, end, BookingViewModel.RoomId);
+                if (!isValid)
+                {
+                    ModelState.AddModelError(string.Empty, errorMessage);
+                    return Page();
+                }
+            }            
 
-            myContext.Bookings.Add(booking);
+            var seriesId = Guid.NewGuid();
+            Booking firstBook = null;
+            foreach (var (start, end) in occurrences)
+            {
+                var booking = new Booking
+                {
+                    EmployeeId = BookingViewModel.EmployeeId,
+                    RoomId = BookingViewModel.RoomId,
+                    Title = BookingViewModel.Title,
+                    NumOfAttendees = BookingViewModel.NumOfAttendees,
+                    StartDate = start,
+                    EndDate = end,
+                    CancellationCode = Guid.NewGuid().ToString("N")[..8].ToUpper(),
+                    isCancelled = false,
+                    SeriesId = seriesId,
+                    IsRecurring = BookingViewModel.IsRecurring
+                };
+
+                myContext.Bookings.Add(booking);
+                if (firstBook == null)
+                    firstBook = booking;
+            }
             await myContext.SaveChangesAsync();
 
             await emailService.SendBookingConfirmationAsync(
                 toEmail: BookingViewModel.Email,
                 employeeName: employee.EmployeeName,
-                bookingId: booking.BookingId.ToString(),
-                title: booking.Title,
-                startDate: booking.StartDate.ToString("yyyy-MM-dd HH:mm"), 
-                endDate: booking.EndDate.ToString("yyyy-MM-dd HH:mm"),
-                cancellationCode: booking.CancellationCode
+                bookingId: firstBook.BookingId.ToString(),
+                title: firstBook.Title,
+                startDate: firstBook.StartDate.ToString("yyyy-MM-dd HH:mm"),
+                endDate: firstBook.EndDate.ToString("yyyy-MM-dd HH:mm"),
+                cancellationCode: firstBook.CancellationCode
             );
 
             return RedirectToPage("/Home/Index");
