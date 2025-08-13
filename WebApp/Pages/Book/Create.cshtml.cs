@@ -52,6 +52,42 @@ namespace WebApp.Pages.Book
             return (true, null);
         }
 
+        private List<(DateTime Start, DateTime End)> FindNextAvail(int roomId, DateTime requestedStart, TimeSpan duration)
+        {
+            const int bufferMins = 15;
+            var buffer = TimeSpan.FromMinutes(bufferMins);
+            var suggestions = new List<(DateTime Start, DateTime End)>();
+
+            var dayStart = requestedStart.Date;
+            var dayEnd = dayStart.AddDays(1);
+
+            var bookings = myContext.Bookings
+                .Where(x => x.RoomId == roomId && !x.isCancelled && x.StartDate < dayEnd && x.EndDate > dayStart)
+                .OrderBy(x => x.StartDate)
+                .ToList();
+
+            DateTime gapStart = requestedStart + buffer;
+
+            foreach (var booking in bookings)
+            {
+                if (booking.StartDate > gapStart)
+                {
+                    var gapDuration = booking.StartDate - gapStart;
+                    if (gapDuration >= duration)
+                    {
+                        suggestions.Add((gapStart, gapStart + duration));
+                        if (suggestions.Count == 3)
+                            break;
+                    }
+                }
+                if(booking.EndDate > gapStart)
+                    gapStart = booking.EndDate;
+            }
+            if (suggestions.Count < 3 && dayEnd - gapStart >= duration)
+                suggestions.Add((gapStart, gapStart + duration));
+
+            return suggestions;
+        }
         private List<(DateTime Start, DateTime End)> GenerateOccurrences(
             DateTime start,
             DateTime end,
@@ -144,7 +180,16 @@ namespace WebApp.Pages.Book
                 var (isValid, errorMessage) = await ValidateBookingsAsync(start, end, BookingViewModel.RoomId);
                 if (!isValid)
                 {
-                    ModelState.AddModelError(string.Empty, errorMessage);
+                    var duration = end - start;
+                    var suggestions = FindNextAvail(BookingViewModel.RoomId, start, duration);
+
+                    if (suggestions.Any())
+                    {
+                        ModelState.AddModelError(string.Empty, $"{errorMessage} Here are some available time slots you can consider:");
+                        ViewData["ConflictSuggestions"] = suggestions;
+                    }
+                    else
+                        ModelState.AddModelError(string.Empty, errorMessage);
                     return Page();
                 }
             }            
