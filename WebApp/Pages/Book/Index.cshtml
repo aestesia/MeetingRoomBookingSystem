@@ -9,12 +9,31 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Title</th>
-            <th>Booked By</th>
-            <th>Room</th>
-            <th>StartDate</th>
-            <th>EndDate</th>
-            <th>Actions</th>
+            <th>
+                <a asp-page="./Index" asp-route-sortOrder="@(Model.CurrentSort == "title_asc" ? "title_desc" : "title_asc")">
+                    Title
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Index" asp-route-sortOrder="@(Model.CurrentSort == "bookedby_asc" ? "bookedby_desc" : "bookedby_asc")">
+                    Booked By
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Index" asp-route-sortOrder="@(Model.CurrentSort == "room_asc" ? "room_desc" : "room_asc")">
+                    Room
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Index" asp-route-sortOrder="@(Model.CurrentSort == "startdate_asc" ? "startdate_desc" : "startdate_asc")">
+                    Start Date
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Index" asp-route-sortOrder="@(Model.CurrentSort == "enddate_asc" ? "enddate_desc" : "enddate_asc")">
+                    End Date
+                </a>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -22,12 +41,12 @@
         {
             <tr>
                 <td>@booking.Title</td>
-                <td>@booking.Employee.EmployeeName</td>
-                <td>@booking.Room.RoomName</td>
+                <td>@booking.BookedBy</td>
+                <td>@booking.RoomName</td>
                 <td>@booking.StartDate</td>
                 <td>@booking.EndDate</td>
                 <td>
-                    <a asp-page="./Details" asp-route-id="@booking.BookingId">Details</a> |
+                    <a asp-page="./Details" asp-route-id="@booking.BookingId">Details</a> 
                     @* <a asp-asp-page="./Edit" asp-route-id="@booking.BookingId">Edit</a> | *@
                     <a asp-page="./Cancel" asp-route-id="@booking.BookingId">Cancel</a>
                 </td>

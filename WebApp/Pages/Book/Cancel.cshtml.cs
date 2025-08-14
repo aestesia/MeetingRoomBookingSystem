@@ -55,7 +55,7 @@ namespace WebApp.Pages.Book
 
             var booking = await myContext.Bookings
                 .Include(x => x.Employee)
-                .FirstOrDefaultAsync(b => b.BookingId == CancelBooking.BookingId);
+                .FirstOrDefaultAsync(x => x.BookingId == CancelBooking.BookingId);
 
             if (booking == null || booking.CancellationCode != CancelBooking.CancellationCode)
             {
