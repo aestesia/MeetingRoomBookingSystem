@@ -20,3 +20,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+#calendar {
+    max-width: 1000px;
+    margin: 0 auto;
+}

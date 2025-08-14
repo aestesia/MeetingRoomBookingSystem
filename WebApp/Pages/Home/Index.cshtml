@@ -2,48 +2,121 @@
 @model IndexModel
 @using System.Text.Json
 @{
-    ViewData["Title"] = "Home page";
-    // var options = new System.Text.Json.JsonSerializerOptions
-    // {
-    //     PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
-    // };
+    ViewData["Title"] = "Home";
 }
 
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Room Booking Calendar</title>
 
-        <!-- FullCalendar CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet" />
+<h1 class="text-center my-4">Master Booking Calendar</h1>
 
-        <style>
-            #calendar {
-                max-width: 900px;
-                margin: 40px auto;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Master Booking Calendar</h1>
-        <div id="calendar"></div>
+<!-- Room filter dropdown -->
+<div class="mb-4">
+    <label for="roomFilter" class="form-label">Filter by Room:</label>
+    <select id="roomFilter" class="form-select" aria-label="Room filter">
+        <option value="">All Rooms</option>
+        @foreach (var room in Model.RoomNames)
+        {
+            <option value="@room">@room</option>
+        }
+    </select>
+</div>
 
-        <!-- FullCalendar JS -->
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<!-- Bootstrap styled calendar container -->
+<div id="calendar" class="bg-white p-4 rounded shadow-sm mb-5"></div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function(){
-                var calendarEl = document.getElementById('calendar');
-                // var events = Html.Raw(JsonSerializer.Serialize(Model.CalenderEvents, options));
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    // Pass events data from the server model to FullCalendar
-                    events: @Html.Raw(JsonSerializer.Serialize(Model.CalenderEvents ?? new List<IndexModel.CalenderEvent>()))
-                    // events: events
-                });
-                calendar.render();
+<!-- Event Details Modal -->
+<div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventDetailsModalLabel">Event Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Title:</strong> <span id="modalEventTitle"></span></p>
+                <p><strong>Room:</strong> <span id="modalEventRoom"></span></p>
+                <p><strong>Booked By:</strong> <span id="modalEventBookedBy"></span></p>
+                <p><strong>Start:</strong> <span id="modalEventStart"></span></p>
+                <p><strong>End:</strong> <span id="modalEventEnd"></span></p>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <a id="bookingDetailLink" class="btn btn-primary" href="#">View Details</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Calendar script injected via section -->
+@section Scripts{
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            var calendarEl = document.getElementById('calendar');
+
+            const allEvents = @Html.Raw(JsonSerializer.Serialize(Model.CalenderEvents ?? new List<IndexModel.CalenderEvent>()));
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                height: 'auto',
+                aspectRatio: 1.5,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                // Pass events data from the server model to FullCalendar
+                events: allEvents,
+                eventDisplay: 'block',
+                eventColor: '#007bff',
+                eventTextColor: 'white',
+
+                eventDidMount: function(info){
+                    const bookedBy = info.event.extendedProps.bookedBy;
+                    const room = info.event.extendedProps.room;
+                    const tooltiContent = `
+                        <strong>${info.event.title}</strong><br/>
+                        Room: ${room}<br/>
+                        Booked by: ${bookedBy}
+                    `;
+
+                        tippy(info.el, {
+                        content: tooltiContent,
+                        allowHTML: true,
+                        placement: 'top',
+                        theme: 'light-border',
+                        delay: [300, 0],  // delay showing, no delay hiding
+                        arrow: true,
+                    });
+                },
+
+                eventClick: function(info){
+                    const props = info.event.extendedProps;
+
+                    // Set modal content
+                    document.getElementById('modalEventTitle').textContent = info.event.title;
+                    document.getElementById('modalEventStart').textContent = info.event.start?.toLocaleString() ?? '';
+                    document.getElementById('modalEventEnd').textContent = info.event.end?.toLocaleString() ?? 'N/A';
+                    document.getElementById('modalEventRoom').textContent = props.room ?? '';
+                    document.getElementById('modalEventBookedBy').textContent = props.bookedBy ?? '';
+                    document.getElementById('bookingDetailLink').href = `/Book/Details/${info.event.id}`;
+
+                    // Show Bootstrap modal
+                    const myModal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
+                    myModal.show();
+                }
             });
-        </script>
-    </body>
-</html>
+            calendar.render();
+
+            document.getElementById('roomFilter').addEventListener('change', function () {
+                const selectedRoom = this.value;
+
+                const filteredEvents = selectedRoom
+                    ? allEvents.filter(e => e.room === selectedRoom)
+                    : allEvents;
+
+                calendar.removeAllEvents();
+                calendar.addEventSource(filteredEvents);
+            });
+        });
+    </script>
+}

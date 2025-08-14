@@ -6,12 +6,12 @@
 }
 
 <h2>Create Booking</h2>
-<form method="post">
+<form method="post" class="needs-validation" novalidate>
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     @if (ViewData["ConflictSuggestions"] is List<(DateTime Start, DateTime End)> suggestions && suggestions.Any())
     {
-        <div class="alert alert-info" style="margin-bottom:1em;">
-            <ul>
+        <div class="alert alert-info mb-4">
+            <ul class="mb-0">
                 @foreach (var slot in suggestions)
                 {
                     <li>@slot.Start.ToString("HH:mm") - @slot.End.ToString("HH:mm")</li>
@@ -19,61 +19,62 @@
             </ul>
         </div>
     }
-    <div>
-        <label asp-for="BookingViewModel.EmployeeId"></label>
-        <input asp-for="BookingViewModel.EmployeeId" />
-        <span asp-validation-for="BookingViewModel.EmployeeId"></span>
+    <div class="mb-3">
+        <label asp-for="BookingViewModel.EmployeeId" class="form-label"></label>
+        <input asp-for="BookingViewModel.EmployeeId" class="form-control" />
+        <span asp-validation-for="BookingViewModel.EmployeeId" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="BookingViewModel.Email"></label>
-        <input asp-for="BookingViewModel.Email" />
-        <span asp-validation-for="BookingViewModel.Email"></span>
+    <div class="mb-3">
+        <label asp-for="BookingViewModel.Email" class="form-label"></label>
+        <input asp-for="BookingViewModel.Email" class="form-control" />
+        <span asp-validation-for="BookingViewModel.Email" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="BookingViewModel.RoomId"></label>
-        <input asp-for="BookingViewModel.RoomId" />
-        <span asp-validation-for="BookingViewModel.RoomId"></span>
+    <div class="mb-3">
+        <label asp-for="BookingViewModel.RoomId" class="form-label"></label>
+        <select asp-for="BookingViewModel.RoomId" class="form-select" asp-items="Model.RoomList">
+            <option value="">Select a room</option>
+        </select>
+        <span asp-validation-for="BookingViewModel.RoomId" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="BookingViewModel.Title"></label>
-        <input asp-for="BookingViewModel.Title" />
-        <span asp-validation-for="BookingViewModel.Title"></span>
+    <div class="mb-3">
+        <label asp-for="BookingViewModel.Title" class="form-label"></label>
+        <input asp-for="BookingViewModel.Title" class="form-control" />
+        <span asp-validation-for="BookingViewModel.Title" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="BookingViewModel.NumOfAttendees"></label>
-        <input asp-for="BookingViewModel.NumOfAttendees" />
-        <span asp-validation-for="BookingViewModel.NumOfAttendees"></span>
+    <div class="mb-3">
+        <label asp-for="BookingViewModel.NumOfAttendees" class="form-label"></label>
+        <input asp-for="BookingViewModel.NumOfAttendees" class="form-control" />
+        <span asp-validation-for="BookingViewModel.NumOfAttendees" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="BookingViewModel.StartDate"></label>
-        <input asp-for="BookingViewModel.StartDate" />
-        <span asp-validation-for="BookingViewModel.StartDate"></span>
+    <div class="mb-3">
+        <label asp-for="BookingViewModel.StartDate" class="form-label"></label>
+        <input asp-for="BookingViewModel.StartDate" class="form-control" />
+        <span asp-validation-for="BookingViewModel.StartDate" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="BookingViewModel.EndDate"></label>
-        <input asp-for="BookingViewModel.EndDate" />
-        <span asp-validation-for="BookingViewModel.EndDate"></span>
+    <div class="mb-3">
+        <label asp-for="BookingViewModel.EndDate" class="form-label"></label>
+        <input asp-for="BookingViewModel.EndDate" class="form-control" />
+        <span asp-validation-for="BookingViewModel.EndDate" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="BookingViewModel.IsRecurring"></label>
-        <input asp-for="BookingViewModel.IsRecurring" type="checkbox" id="isRecurringCheckbox" />
-        <span asp-validation-for="BookingViewModel.IsRecurring"></span>
+    <div class="mb-3">
+        <label asp-for="BookingViewModel.IsRecurring" class="form-check-label"></label>
+        <input asp-for="BookingViewModel.IsRecurring" type="checkbox" class="form-check-input" id="isRecurringCheckbox" />
+        <span asp-validation-for="BookingViewModel.IsRecurring" class="text-danger"></span>
     </div>
     <div id="recurrenceFields" style="display:none;">
-        <div>
-            <label asp-for="BookingViewModel.RecurrencePattern"></label>
-            <select asp-for="BookingViewModel.RecurrencePattern" asp-items="Html.GetEnumSelectList<RecurrencePattern>()"></select>
-            <span asp-validation-for="BookingViewModel.RecurrencePattern"></span>
+        <div class="mb-3">
+            <label asp-for="BookingViewModel.RecurrencePattern" class="form-label"></label>
+            <select asp-for="BookingViewModel.RecurrencePattern" class="form-select" asp-items="Html.GetEnumSelectList<RecurrencePattern>()"></select>
+            <span asp-validation-for="BookingViewModel.RecurrencePattern" class="text-danger"></span>
         </div>
-
-        <div>
-            <label asp-for="BookingViewModel.RecurrenceEndDate"></label>
-            <input asp-for="BookingViewModel.RecurrenceEndDate" type="date" />
-            <span asp-validation-for="BookingViewModel.RecurrenceEndDate"></span>
+        <div class="mb-3">
+            <label asp-for="BookingViewModel.RecurrenceEndDate" class="form-label"></label>
+            <input asp-for="BookingViewModel.RecurrenceEndDate" type="date" class="form-control" />
+            <span asp-validation-for="BookingViewModel.RecurrenceEndDate" class="text-danger"></span>
         </div>
     </div>
     
-    <button type="submit">Create</button>
+    <button type="submit" class="btn btn-success">Create</button>
 </form>
 
 @section Scripts{

@@ -18,12 +18,16 @@ namespace WebApp.Pages.Home
 
         public class CalenderEvent
         {
+            public int id { get; set; }
             public string title { get; set; }
+            public string bookedBy { get; set; }
+            public string room { get; set; }
             public string start { get; set; }
             public string end { get; set; }
         }
 
-        public List<CalenderEvent> CalenderEvents { get; set; } = new();
+        public List<string> RoomNames { get; set; }
+        public List<CalenderEvent> CalenderEvents { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -33,9 +37,18 @@ namespace WebApp.Pages.Home
                 .Where(x => !x.isCancelled)
                 .ToListAsync();
 
+            RoomNames = bookings
+                .Select(b => b.Room.RoomName)
+                .Distinct()
+                .OrderBy(name => name)
+                .ToList();
+
             CalenderEvents = bookings.Select(x => new CalenderEvent
             {
-                title = $"{x.Title} - {x.Room.RoomName} (Booked by: {x.Employee.EmployeeName})",
+                id = x.BookingId,
+                title = x.Title,
+                bookedBy = x.Employee.EmployeeName,
+                room = x.Room.RoomName,
                 start = x.StartDate.ToString("yyyy-MM-ddTHH:mm:ss"),
                 end = x.EndDate.ToString("yyyy-MM-ddTHH:mm:ss")
             }).ToList();

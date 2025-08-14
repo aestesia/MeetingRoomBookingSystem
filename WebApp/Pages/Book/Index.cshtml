@@ -34,6 +34,9 @@
                     End Date
                 </a>
             </th>
+            <th>
+                Actions
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -46,9 +49,8 @@
                 <td>@booking.StartDate</td>
                 <td>@booking.EndDate</td>
                 <td>
-                    <a asp-page="./Details" asp-route-id="@booking.BookingId">Details</a> 
-                    @* <a asp-asp-page="./Edit" asp-route-id="@booking.BookingId">Edit</a> | *@
-                    <a asp-page="./Cancel" asp-route-id="@booking.BookingId">Cancel</a>
+                    <a asp-page="./Details" asp-route-id="@booking.BookingId" class="btn btn-primary">Details</a>
+                    <a asp-page="./Cancel" asp-route-id="@booking.BookingId" class="btn btn-danger">Cancel</a>
                 </td>
             </tr>
         }

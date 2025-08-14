@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Context;
 using WebApp.Models;
@@ -21,6 +22,19 @@ namespace WebApp.Pages.Book
 
         [BindProperty]
         public CreateBookingViewModel BookingViewModel { get; set; }
+        public List<SelectListItem> RoomList { get; set; } = new();
+
+        public async Task OnGetAsync()
+        {
+            RoomList = await myContext.Rooms
+                .OrderBy(r => r.RoomName)
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.RoomName
+                })
+                .ToListAsync();
+        }
 
         private async Task<(bool IsValid, string Error)> ValidateBookingsAsync(DateTime start, DateTime end, int roomId)
         {
@@ -117,6 +131,15 @@ namespace WebApp.Pages.Book
 
         public async Task<IActionResult> OnPostAsync()
         {
+            RoomList = await myContext.Rooms
+                .OrderBy(r => r.RoomName)
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.RoomName
+                })
+                .ToListAsync();
+
             if (!ModelState.IsValid)
                 return Page();
 
