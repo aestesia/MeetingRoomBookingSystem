@@ -5,10 +5,18 @@
     ViewData["Title"] = "Book a Room";
 }
 
-<h2>Create Booking</h2>
+<h2>@ViewData["Title"]</h2>
+
+@if (TempData["SuccessMsg"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMsg"]
+    </div>
+}
+
 <form method="post" class="needs-validation" novalidate>
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    @if (ViewData["ConflictSuggestions"] is List<(DateTime Start, DateTime End)> suggestions && suggestions.Any())
+    @* @if (ViewData["ConflictSuggestions"] is List<(DateTime Start, DateTime End)> suggestions && suggestions.Any())
     {
         <div class="alert alert-info mb-4">
             <ul class="mb-0">
@@ -18,7 +26,7 @@
                 }
             </ul>
         </div>
-    }
+    } *@
     <div class="mb-2 row">
         <label asp-for="BookingViewModel.EmployeeId" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-3">
@@ -96,23 +104,23 @@
         </div>
     </div>
     
-    <button type="submit" class="btn btn-success">Create</button>
+    <button type="submit" class="btn btn-primary">Create</button>
 </form>
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", () => {
             const checkbox = document.getElementById("isRecurringCheckbox");
             const recurrenceFields = document.getElementById("recurrenceFields");
 
-            function toggleRecurrenceFields() {
+            function toggleRecurrence() {
                 recurrenceFields.style.display = checkbox.checked ? "block" : "none";
             }
 
-            checkbox.addEventListener("change", toggleRecurrenceFields);
-            toggleRecurrenceFields();
+            checkbox.addEventListener("change", toggleRecurrence);
+            toggleRecurrence();
         });
     </script>
 }

@@ -60,5 +60,58 @@
     <script src="https://unpkg.com/tippy.js@6"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Success/Error Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" id="messageModalHeader">
+                    <h5 class="modal-title" id="messageModalLabel">Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="messageModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" id="messageModalOkBtn" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const successMsg = '@TempData["successMsg"]';
+          const errorMsg = '@TempData["ErrorMsg"]';
+          const modalEl = document.getElementById('messageModal');
+          const modalTitle = document.getElementById('messageModalLabel');
+          const modalBody = document.getElementById('messageModalBody');
+          const modalHeader = document.getElementById('messageModalHeader');
+          const okBtn = document.getElementById('messageModalOkBtn');
+
+          let shouldRedirect = false;
+
+          if (successMsg) {
+            modalTitle.textContent = "Success";
+            modalBody.textContent = successMsg;
+            modalHeader.classList.remove('bg-danger');
+            modalHeader.classList.add('bg-success', 'text-white');
+            shouldRedirect = true;
+            var modal = new bootstrap.Modal(modalEl);
+            modal.show();
+          }
+          else if (errorMsg) {
+            modalTitle.textContent = "Error";
+            modalBody.textContent = errorMsg;
+            modalHeader.classList.remove('bg-success');
+            modalHeader.classList.add('bg-danger', 'text-white');
+            var modal = new bootstrap.Modal(modalEl);
+            modal.show();
+          }
+          if(shouldRedirect && okBtn){
+              okBtn.addEventListener('click', () => {
+                  window.location.href = '/';
+              });
+          }
+        });
+    </script>
 </body>
 </html>

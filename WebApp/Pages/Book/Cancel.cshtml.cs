@@ -72,8 +72,8 @@ namespace WebApp.Pages.Book
             booking.isCancelled = true;
             await myContext.SaveChangesAsync();
 
-            SuccessMessage = "Booking cancelled successfully.";
-            ModelState.Clear();
+            //SuccessMessage = "Booking cancelled successfully.";
+            //ModelState.Clear();
 
             await emailService.SendBookingCancellationAsync(
                 toEmail: booking.Employee.EmployeeEmail,
@@ -85,8 +85,12 @@ namespace WebApp.Pages.Book
             );
 
             // Reset form
-            CancelBooking = new CancelBookingViewModel();
-            return Page();
+            //CancelBooking = new CancelBookingViewModel();
+            //return Page();
+
+            TempData["SuccessMsg"] = "Booking cancelled";
+            return RedirectToPage("Cancel", new { id = CancelBooking.BookingId });
+
         }
     }
 }

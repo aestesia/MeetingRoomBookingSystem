@@ -251,7 +251,9 @@ namespace WebApp.Pages.Book
                 cancellationCode: firstBook.CancellationCode
             );
 
-            return RedirectToPage("/Home/Index");
+            //return RedirectToPage("/Home/Index");
+            TempData["SuccessMsg"] = "Booking created successfully";
+            return RedirectToPage("Create");
         }
     }
 }

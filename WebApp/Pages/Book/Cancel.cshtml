@@ -5,10 +5,15 @@
 }
 <h2>Insert Cancellation Code</h2>
 
-@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+@* @if (!string.IsNullOrEmpty(Model.SuccessMessage))
 {
     <div class="alert alert-success">@Model.SuccessMessage</div>
+} *@
+@if (TempData["SuccessMsg"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMsg"]</div>
 }
+
 
 <form method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -16,14 +21,14 @@
         <label asp-for="CancelBooking.BookingId" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-3">
             <input asp-for="CancelBooking.BookingId" class="form-control" readonly />
-            <span asp-validation-for="CancelBooking.BookingId"></span>
+            <span asp-validation-for="CancelBooking.BookingId" class="text-danger"></span>
         </div>
     </div>
     <div class="mb-2 row">
         <label asp-for="CancelBooking.CancellationCode" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-3">
             <input asp-for="CancelBooking.CancellationCode" class="form-control" />
-            <span asp-validation-for="CancelBooking.CancellationCode"></span>
+            <span asp-validation-for="CancelBooking.CancellationCode" class="text-danger"></span>
         </div>
     </div>
 
@@ -34,7 +39,7 @@
 
 <!-- Confirmation Modal -->
 <div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered" ">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="cancelConfirmLabel">Confirm Cancellation</h5>
