@@ -19,58 +19,80 @@
             </ul>
         </div>
     }
-    <div class="mb-3">
-        <label asp-for="BookingViewModel.EmployeeId" class="form-label"></label>
-        <input asp-for="BookingViewModel.EmployeeId" class="form-control" />
-        <span asp-validation-for="BookingViewModel.EmployeeId" class="text-danger"></span>
+    <div class="mb-2 row">
+        <label asp-for="BookingViewModel.EmployeeId" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3">
+            <input asp-for="BookingViewModel.EmployeeId" class="form-control" />
+            <span asp-validation-for="BookingViewModel.EmployeeId" class="text-danger"></span>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="BookingViewModel.Email" class="form-label"></label>
-        <input asp-for="BookingViewModel.Email" class="form-control" />
-        <span asp-validation-for="BookingViewModel.Email" class="text-danger"></span>
+    <div class="mb-2 row">
+        <label asp-for="BookingViewModel.Email" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3">
+            <input asp-for="BookingViewModel.Email" class="form-control" />
+            <span asp-validation-for="BookingViewModel.Email" class="text-danger"></span>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="BookingViewModel.RoomId" class="form-label"></label>
-        <select asp-for="BookingViewModel.RoomId" class="form-select" asp-items="Model.RoomList">
-            <option value="">Select a room</option>
-        </select>
-        <span asp-validation-for="BookingViewModel.RoomId" class="text-danger"></span>
+    <div class="mb-2 row">
+        <label asp-for="BookingViewModel.RoomId" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3">
+            <select asp-for="BookingViewModel.RoomId" class="form-select" asp-items="Model.RoomList">
+                <option value="">Select a room</option>
+            </select>
+            <span asp-validation-for="BookingViewModel.RoomId" class="text-danger"></span>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="BookingViewModel.Title" class="form-label"></label>
-        <input asp-for="BookingViewModel.Title" class="form-control" />
-        <span asp-validation-for="BookingViewModel.Title" class="text-danger"></span>
+    <div class="mb-2 row">
+        <label asp-for="BookingViewModel.Title" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3">
+            <input asp-for="BookingViewModel.Title" class="form-control" />
+            <span asp-validation-for="BookingViewModel.Title" class="text-danger"></span>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="BookingViewModel.NumOfAttendees" class="form-label"></label>
-        <input asp-for="BookingViewModel.NumOfAttendees" class="form-control" />
-        <span asp-validation-for="BookingViewModel.NumOfAttendees" class="text-danger"></span>
+    <div class="mb-2 row">
+        <label asp-for="BookingViewModel.NumOfAttendees" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3">
+            <input asp-for="BookingViewModel.NumOfAttendees" class="form-control" />
+            <span asp-validation-for="BookingViewModel.NumOfAttendees" class="text-danger"></span>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="BookingViewModel.StartDate" class="form-label"></label>
-        <input asp-for="BookingViewModel.StartDate" class="form-control" />
-        <span asp-validation-for="BookingViewModel.StartDate" class="text-danger"></span>
+    <div class="mb-2 row">
+        <label asp-for="BookingViewModel.StartDate" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3">
+            <input asp-for="BookingViewModel.StartDate" class="form-control" />
+            <span asp-validation-for="BookingViewModel.StartDate" class="text-danger"></span>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="BookingViewModel.EndDate" class="form-label"></label>
-        <input asp-for="BookingViewModel.EndDate" class="form-control" />
-        <span asp-validation-for="BookingViewModel.EndDate" class="text-danger"></span>
+    <div class="mb-2 row">
+        <label asp-for="BookingViewModel.EndDate" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3">
+            <input asp-for="BookingViewModel.EndDate" class="form-control" />
+            <span asp-validation-for="BookingViewModel.EndDate" class="text-danger"></span>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="BookingViewModel.IsRecurring" class="form-check-label"></label>
-        <input asp-for="BookingViewModel.IsRecurring" type="checkbox" class="form-check-input" id="isRecurringCheckbox" />
-        <span asp-validation-for="BookingViewModel.IsRecurring" class="text-danger"></span>
+    <div class="mb-2 row">
+        <label asp-for="BookingViewModel.IsRecurring" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3 d-flex align-items-center">
+            <div class="form-check">
+                <input asp-for="BookingViewModel.IsRecurring" type="checkbox" class="form-check-input" id="isRecurringCheckbox" />
+            </div>
+            <span asp-validation-for="BookingViewModel.IsRecurring" class="text-danger"></span>
+        </div>
     </div>
     <div id="recurrenceFields" style="display:none;">
-        <div class="mb-3">
-            <label asp-for="BookingViewModel.RecurrencePattern" class="form-label"></label>
-            <select asp-for="BookingViewModel.RecurrencePattern" class="form-select" asp-items="Html.GetEnumSelectList<RecurrencePattern>()"></select>
-            <span asp-validation-for="BookingViewModel.RecurrencePattern" class="text-danger"></span>
+        <div class="mb-2 row">
+            <label asp-for="BookingViewModel.RecurrencePattern" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-3">
+                <select asp-for="BookingViewModel.RecurrencePattern" class="form-select" asp-items="Html.GetEnumSelectList<RecurrencePattern>()"></select>
+                <span asp-validation-for="BookingViewModel.RecurrencePattern" class="text-danger"></span>
+            </div>
         </div>
-        <div class="mb-3">
-            <label asp-for="BookingViewModel.RecurrenceEndDate" class="form-label"></label>
-            <input asp-for="BookingViewModel.RecurrenceEndDate" type="date" class="form-control" />
-            <span asp-validation-for="BookingViewModel.RecurrenceEndDate" class="text-danger"></span>
+        <div class="mb-2 row">
+            <label asp-for="BookingViewModel.RecurrenceEndDate" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-3">
+                <input asp-for="BookingViewModel.RecurrenceEndDate" type="date" class="form-control" />
+                <span asp-validation-for="BookingViewModel.RecurrenceEndDate" class="text-danger"></span>
+            </div>
         </div>
     </div>
     

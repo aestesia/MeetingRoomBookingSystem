@@ -16,7 +16,7 @@ namespace WebApp.Pages.Book
             this.myContext = myContext;
         }
 
-        public GetBookingViewModel booking {  get; set; }
+        public GetBookingViewModel? booking {  get; set; }
         public async Task<IActionResult> OnGetAsync(int id)
         {
             booking = await myContext.Bookings
