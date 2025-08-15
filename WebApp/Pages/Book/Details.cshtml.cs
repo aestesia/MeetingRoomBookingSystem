@@ -20,7 +20,7 @@ namespace WebApp.Pages.Book
         public async Task<IActionResult> OnGetAsync(int id)
         {
             booking = await myContext.Bookings
-                .Where(x => x.BookingId == x.BookingId && !x.isCancelled)
+                .Where(x => x.BookingId == id && !x.isCancelled)
                 .Select(x => new GetBookingViewModel
                 {
                     BookingId = x.BookingId,
