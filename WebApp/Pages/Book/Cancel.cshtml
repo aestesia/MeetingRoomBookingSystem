@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Cancel Booking";
 }
-<h2>Cancel Booking</h2>
+<h2>Insert Cancellation Code</h2>
 
 @if (!string.IsNullOrEmpty(Model.SuccessMessage))
 {
@@ -12,20 +12,51 @@
 
 <form method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div>
-        <label asp-for="CancelBooking.BookingId"></label>
-        <input asp-for="CancelBooking.BookingId" readonly />
-        <span asp-validation-for="CancelBooking.BookingId"></span>
+    <div class="mb-2 row">
+        <label asp-for="CancelBooking.BookingId" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3">
+            <input asp-for="CancelBooking.BookingId" class="form-control" readonly />
+            <span asp-validation-for="CancelBooking.BookingId"></span>
+        </div>
     </div>
-    <div>
-        <label asp-for="CancelBooking.CancellationCode"></label>
-        <input asp-for="CancelBooking.CancellationCode" />
-        <span asp-validation-for="CancelBooking.CancellationCode"></span>
+    <div class="mb-2 row">
+        <label asp-for="CancelBooking.CancellationCode" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3">
+            <input asp-for="CancelBooking.CancellationCode" class="form-control" />
+            <span asp-validation-for="CancelBooking.CancellationCode"></span>
+        </div>
     </div>
 
-    <button type="submit">Cancel Booking</button>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelConfirmModal">
+        Cancel Booking
+    </button>
 </form>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="cancelConfirmLabel">Confirm Cancellation</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to cancel this booking?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('confirmCancelBtn').addEventListener('click', function () {
+            document.querySelector('form').submit();
+        });
+    </script>
 }
