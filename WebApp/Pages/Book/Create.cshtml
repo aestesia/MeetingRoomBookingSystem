@@ -16,7 +16,7 @@
 
 <form method="post" class="needs-validation" novalidate>
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    @* @if (ViewData["ConflictSuggestions"] is List<(DateTime Start, DateTime End)> suggestions && suggestions.Any())
+    @if (ViewData["ConflictSuggestions"] is List<(DateTime Start, DateTime End)> suggestions && suggestions.Any())
     {
         <div class="alert alert-info mb-4">
             <ul class="mb-0">
@@ -26,7 +26,7 @@
                 }
             </ul>
         </div>
-    } *@
+    }
     <div class="mb-2 row">
         <label asp-for="BookingViewModel.EmployeeId" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-3">

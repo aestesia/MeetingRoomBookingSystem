@@ -35,7 +35,8 @@ namespace WebApp.Services
                     <li><strong>End Date:</strong> {endDate}</li>
                     <li><strong>Cancellation Code:</strong> {cancellationCode}</li>
                 </ul>
-                <p>If you need to cancel your booking, please use the cancellation code.</p>"
+                <p>If you need to cancel your booking, please use the cancellation code.</p> 
+                <p>For recurring meetings, you can use the same cancellation code to cancel individual occurrences as needed.</p>"
             };
 
             using var smtp = new SmtpClient();
