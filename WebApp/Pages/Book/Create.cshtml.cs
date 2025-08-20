@@ -24,7 +24,7 @@ namespace WebApp.Pages.Book
         public CreateBookingViewModel BookingViewModel { get; set; }
         public List<SelectListItem> RoomList { get; set; } = new();
 
-        public async Task OnGetAsync()
+        private async Task LoadRoomListAsync()
         {
             RoomList = await myContext.Rooms
                 .OrderBy(r => r.RoomName)
@@ -36,28 +36,34 @@ namespace WebApp.Pages.Book
                 .ToListAsync();
         }
 
+        public async Task OnGetAsync()
+        {
+            await LoadRoomListAsync();
+        }
+
         // Validate Booking
         private async Task<(bool IsValid, string Error)> ValidateBookingsAsync(DateTime start, DateTime end, int roomId)
         {
+            
             // Check Booking Buffer Time
             bool isConflict = await myContext.Bookings.AnyAsync(x =>
-                x.RoomId == BookingViewModel.RoomId && !x.isCancelled &&
+                x.RoomId == roomId && !x.isCancelled &&
                 (
-                    BookingViewModel.StartDate < x.EndDate.AddMinutes(15) &&
-                    BookingViewModel.EndDate > x.StartDate.AddMinutes(-15)
+                    start < x.EndDate.AddMinutes(15) &&
+                    end > x.StartDate.AddMinutes(-15)
                 )
             );
             if (isConflict)
                 return (false, "Room is unavailable at the selected time due to an existing booking.");
 
             // Check Prime Time
-            DayOfWeek day = BookingViewModel.StartDate.DayOfWeek;
+            DayOfWeek day = start.DayOfWeek;
             if (day >= DayOfWeek.Monday && day <= DayOfWeek.Friday)
             {
-                var primeStart = BookingViewModel.StartDate.Date.AddHours(9);
-                var primeEnd = BookingViewModel.StartDate.Date.AddHours(12);
-                TimeSpan duration = BookingViewModel.EndDate - BookingViewModel.StartDate;
-                if (BookingViewModel.StartDate >= primeStart && BookingViewModel.StartDate < primeEnd)
+                var primeStart = start.Date.AddHours(9);
+                var primeEnd = start.Date.AddHours(12);
+                TimeSpan duration = end - start;
+                if (start >= primeStart && start < primeEnd)
                 {
                     if (duration > TimeSpan.FromHours(1))
                         return (false, "Booking during prime time (9 AM – 12 PM) cannot exceed 1 hour.");
@@ -104,6 +110,8 @@ namespace WebApp.Pages.Book
 
             return suggestions;
         }
+        
+        // Recurrence
         private List<(DateTime Start, DateTime End)> GenerateOccurrences(
             DateTime start,
             DateTime end,
@@ -133,14 +141,7 @@ namespace WebApp.Pages.Book
 
         public async Task<IActionResult> OnPostAsync()
         {
-            RoomList = await myContext.Rooms
-                .OrderBy(r => r.RoomName)
-                .Select(r => new SelectListItem
-                {
-                    Value = r.Id.ToString(),
-                    Text = r.RoomName
-                })
-                .ToListAsync();
+            await LoadRoomListAsync();
 
             if (!ModelState.IsValid)
                 return Page();
@@ -164,12 +165,12 @@ namespace WebApp.Pages.Book
 
             // Check Room Capacity
             var room = await myContext.Rooms.FindAsync(BookingViewModel.RoomId);
-            //if (room == null)
-            //{
-            //    ModelState.AddModelError("BookingViewModel.RoomId", "Room does not exist.");
-            //    return Page();
-            //}
-            
+            if (room == null)
+            {
+                ModelState.AddModelError("BookingViewModel.RoomId", "Room does not exist.");
+                return Page();
+            }
+
             if (BookingViewModel.NumOfAttendees > room.Capacity)
             {
                 ModelState.AddModelError("BookingViewModel.NumOfAttendees", $"Number of attendees exceeds room capacity ({room.Capacity}).");
@@ -257,7 +258,6 @@ namespace WebApp.Pages.Book
                 cancellationCode: firstBook.CancellationCode
             );
 
-            //return RedirectToPage("/Home/Index");
             TempData["SuccessMsg"] = "Booking created successfully";
             return RedirectToPage("Create");
         }
