@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Context;
-using WebApp.Models;
 using WebApp.ViewModel;
 
 namespace WebApp.Pages.Book

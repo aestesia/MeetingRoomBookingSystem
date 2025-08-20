@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Context;
-using WebApp.Models;
 using WebApp.Services;
 using WebApp.ViewModel;
 
@@ -72,9 +71,6 @@ namespace WebApp.Pages.Book
             booking.isCancelled = true;
             await myContext.SaveChangesAsync();
 
-            //SuccessMessage = "Booking cancelled successfully.";
-            //ModelState.Clear();
-
             await emailService.SendBookingCancellationAsync(
                 toEmail: booking.Employee.EmployeeEmail,
                 employeeName: booking.Employee.EmployeeName,
@@ -83,10 +79,6 @@ namespace WebApp.Pages.Book
                 startDate: booking.StartDate.ToString("yyyy-MM-dd HH:mm"),
                 endDate: booking.EndDate.ToString("yyyy-MM-dd HH:mm")
             );
-
-            // Reset form
-            //CancelBooking = new CancelBookingViewModel();
-            //return Page();
 
             TempData["SuccessMsg"] = "Booking cancelled";
             return RedirectToPage("Cancel", new { id = CancelBooking.BookingId });

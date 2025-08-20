@@ -68,6 +68,9 @@ else
     </div>
 
     <div class="mb-2">
+        <a asp-page="./Reschedule" asp-route-id="@Model.booking.BookingId" class="btn btn-primary">Reschedule</a>
+    </div>
+    <div class="mb-2">
         <a asp-page="./Cancel" asp-route-id="@Model.booking.BookingId" class="btn btn-danger">Cancel Booking</a>
     </div>
     <div class="mb-2">

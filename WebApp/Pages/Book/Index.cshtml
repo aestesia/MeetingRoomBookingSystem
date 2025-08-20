@@ -50,6 +50,7 @@
                 <td>@booking.EndDate</td>
                 <td>
                     <a asp-page="./Details" asp-route-id="@booking.BookingId" class="btn btn-primary">Details</a>
+                    <a asp-page="./Reschedule" asp-route-id="@booking.BookingId" class="btn btn-primary">Reschedule</a>
                     <a asp-page="./Cancel" asp-route-id="@booking.BookingId" class="btn btn-danger">Cancel</a>
                 </td>
             </tr>

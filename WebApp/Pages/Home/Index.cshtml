@@ -40,7 +40,8 @@
             </div>
             <div class="modal-footer d-flex justify-content-between">
                 <div class="d-flex">
-                    <a id="bookingDetailLink" class="btn btn-primary me-2" href="#">View Details</a>
+                    <a id="bookingDetailLink" class="btn btn-primary me-2" href="#">Details</a>
+                    <a id="bookingRescheduleLink" class="btn btn-primary me-2" href="#">Reschedule</a>
                     <a id="bookingCancelLink" class="btn btn-danger" href="#">Cancel Booking</a>
                 </div>
                 <button type="button" class="btn btn-secondary ms-auto" data-bs-dismiss="modal">Close</button>
@@ -102,6 +103,7 @@
                     document.getElementById('modalEventRoom').textContent = props.room ?? '';
                     document.getElementById('modalEventBookedBy').textContent = props.bookedBy ?? '';
                     document.getElementById('bookingDetailLink').href = `/Book/Details/${info.event.id}`;
+                    document.getElementById('bookingRescheduleLink').href = `/Book/Reschedule?id=${info.event.id}`;
                     document.getElementById('bookingCancelLink').href = `/Book/Cancel?id=${info.event.id}`;
 
                     // Show Bootstrap modal
