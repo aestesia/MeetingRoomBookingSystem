@@ -127,7 +127,7 @@ namespace WebApp.Pages.Book
 
             // Add to Database
             var seriesId = Guid.NewGuid();
-            var cancellationCode = Guid.NewGuid().ToString("N")[..8].ToUpper();
+            var updateCode = Guid.NewGuid().ToString("N")[..8].ToUpper();
             Booking firstBook = null;
             foreach (var (start, end) in occurrences)
             {
@@ -139,7 +139,7 @@ namespace WebApp.Pages.Book
                     NumOfAttendees = BookingViewModel.NumOfAttendees,
                     StartDate = start,
                     EndDate = end,
-                    CancellationCode = cancellationCode,
+                    UpdateCode = updateCode,
                     isCancelled = false,
                     SeriesId = seriesId,
                     IsRecurring = BookingViewModel.IsRecurring
@@ -158,7 +158,7 @@ namespace WebApp.Pages.Book
                 title: firstBook.Title,
                 startDate: firstBook.StartDate.ToString("yyyy-MM-dd HH:mm"),
                 endDate: firstBook.EndDate.ToString("yyyy-MM-dd HH:mm"),
-                cancellationCode: firstBook.CancellationCode
+                cancellationCode: firstBook.UpdateCode
             );
 
             TempData["SuccessMsg"] = "Booking created successfully";

@@ -15,7 +15,7 @@ namespace WebApp.Models
         public int NumOfAttendees { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public string CancellationCode { get; set; }
+        public string UpdateCode { get; set; }
         public Guid? SeriesId { get; set; }
         public bool IsRecurring { get; set; }
         public bool isCancelled { get; set; }

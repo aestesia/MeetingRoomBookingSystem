@@ -74,6 +74,13 @@
             <span asp-validation-for="BookingViewModel.EndDate" class="text-danger"></span>
         </div>
     </div>
+    <div class="mb-2 row">
+        <label asp-for="BookingViewModel.UpdateCode" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3">
+            <input asp-for="BookingViewModel.UpdateCode" class="form-control" />
+            <span asp-validation-for="BookingViewModel.UpdateCode" class="text-danger"></span>
+        </div>
+    </div>
 
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

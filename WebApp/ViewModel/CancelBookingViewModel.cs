@@ -6,7 +6,7 @@ namespace WebApp.ViewModel
     {
         [Display(Name = "Booking ID")]
         public int BookingId { get; set; }
-        [Display(Name = "Cancellation Code")]
-        public string CancellationCode { get; set; }
+        [Display(Name = "Update Code")]
+        public string UpdateCode { get; set; }
     }
 }

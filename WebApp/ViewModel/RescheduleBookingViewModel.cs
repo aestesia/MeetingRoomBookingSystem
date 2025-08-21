@@ -16,5 +16,7 @@ namespace WebApp.ViewModel
         public DateTime StartDate { get; set; }
         [Display(Name = "End Date")]
         public DateTime EndDate { get; set; }
+        [Display(Name = "Update Code")]
+        public string UpdateCode { get; set; }
     }
 }

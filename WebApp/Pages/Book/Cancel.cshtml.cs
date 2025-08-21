@@ -56,7 +56,7 @@ namespace WebApp.Pages.Book
                 .Include(x => x.Employee)
                 .FirstOrDefaultAsync(x => x.BookingId == CancelBooking.BookingId);
 
-            if (booking == null || booking.CancellationCode != CancelBooking.CancellationCode)
+            if (booking == null || booking.UpdateCode != CancelBooking.UpdateCode)
             {
                 ModelState.AddModelError(string.Empty, "Invalid Booking ID or Cancellation Code.");
                 return Page();

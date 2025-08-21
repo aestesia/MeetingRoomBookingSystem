@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Metrics;
-using System.Numerics;
 using WebApp.Context;
-using WebApp.Models;
-using WebApp.Services;
-using WebApp.ViewModel;
 
 namespace WebApp.Pages.Base
 {

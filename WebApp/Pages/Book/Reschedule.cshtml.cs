@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Context;
-using WebApp.Models;
 using WebApp.Pages.Base;
 using WebApp.Services;
 using WebApp.ViewModel;
@@ -77,6 +74,12 @@ namespace WebApp.Pages.Book
                 BookingViewModel.RoomId, BookingViewModel.NumOfAttendees);
             if (!isValid)
                 return Page();
+
+            if (booking == null || booking.UpdateCode != BookingViewModel.UpdateCode)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid Booking ID or Cancellation Code.");
+                return Page();
+            }
 
             // Validate occurences
             var (isNotConflict, errorMessage) = await ValidateConflictAsync(BookingViewModel.StartDate, BookingViewModel.EndDate, BookingViewModel.RoomId);
