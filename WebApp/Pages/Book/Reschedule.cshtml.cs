@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Context;
+using WebApp.Models;
 using WebApp.Pages.Base;
 using WebApp.Services;
 using WebApp.ViewModel;
@@ -104,6 +105,16 @@ namespace WebApp.Pages.Book
             booking.EndDate = BookingViewModel.EndDate;
 
             await myContext.SaveChangesAsync();
+
+            await emailService.SendBookingRescheduleAsync(
+                toEmail: BookingViewModel.Email,
+                employeeName: booking.Employee.EmployeeName,
+                bookingId: booking.BookingId.ToString(),
+                title: booking.Title,
+                room: booking.Room.RoomName,
+                startDate: booking.StartDate.ToString("yyyy-MM-dd HH:mm"),
+                endDate: booking.EndDate.ToString("yyyy-MM-dd HH:mm")                
+            );
 
             return RedirectToPage("/Home/Index");
         }

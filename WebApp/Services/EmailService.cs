@@ -15,7 +15,7 @@ namespace WebApp.Services
             this.emailSettings = emailSettings.Value;
         }
 
-        public async Task SendBookingConfirmationAsync(string toEmail, string employeeName, string title, string bookingId, string startDate, string endDate, string cancellationCode)
+        public async Task SendBookingConfirmationAsync(string toEmail, string employeeName, string title, string room, string bookingId, string startDate, string endDate, string updateCode)
         {
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress(emailSettings.SenderName, emailSettings.SenderEmail));
@@ -31,11 +31,12 @@ namespace WebApp.Services
                 <ul>
                     <li><strong>Booking ID:</strong> {bookingId}</li>
                     <li><strong>Title:</strong> {title}</li>
+                    <li><strong>Room:</strong> {room}</li>
                     <li><strong>Start Date:</strong> {startDate}</li>
                     <li><strong>End Date:</strong> {endDate}</li>
-                    <li><strong>Cancellation Code:</strong> {cancellationCode}</li>
+                    <li><strong>Update Code:</strong> {updateCode}</li>
                 </ul>
-                <p>If you need to cancel your booking, please use the cancellation code.</p> 
+                <p>If you need to cancel or reschedule your booking, please use the update code.</p> 
                 <p>For recurring meetings, you can use the same cancellation code to cancel individual occurrences as needed.</p>"
             };
 
@@ -72,6 +73,34 @@ namespace WebApp.Services
             //await smtp.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, SecureSocketOptions.StartTls);
             await smtp.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, emailSettings.EnableSsl);
             //await smtp.AuthenticateAsync(emailSettings.Username, emailSettings.Password);
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
+        }
+
+        public async Task SendBookingRescheduleAsync(string toEmail, string employeeName, string title, string room, string bookingId, string startDate, string endDate)
+        {
+            var email = new MimeMessage();
+            email.From.Add(new MailboxAddress(emailSettings.SenderName, emailSettings.SenderEmail));
+            email.To.Add(MailboxAddress.Parse(toEmail));
+            email.Subject = "Booking Confirmation";
+
+            email.Body = new TextPart("html")
+            {
+                Text = $@"
+                <h3>Booking Rescheduled</h3>
+                <p>Hello {employeeName},</p>
+                <p>Your booking has been Rescheduled.</p>
+                <ul>
+                    <li><strong>Booking ID:</strong> {bookingId}</li>
+                    <li><strong>Title:</strong> {title}</li>
+                    <li><strong>Room:</strong> {room}</li>
+                    <li><strong>Start Date:</strong> {startDate}</li>
+                    <li><strong>End Date:</strong> {endDate}</li>
+                </ul>"
+            };
+
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, emailSettings.EnableSsl);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }

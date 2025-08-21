@@ -128,6 +128,7 @@ namespace WebApp.Pages.Book
             // Add to Database
             var seriesId = Guid.NewGuid();
             var updateCode = Guid.NewGuid().ToString("N")[..8].ToUpper();
+            var room = await myContext.Rooms.SingleOrDefaultAsync(x => x.Id == BookingViewModel.RoomId);
             Booking firstBook = null;
             foreach (var (start, end) in occurrences)
             {
@@ -156,9 +157,10 @@ namespace WebApp.Pages.Book
                 employeeName: employee.EmployeeName,
                 bookingId: firstBook.BookingId.ToString(),
                 title: firstBook.Title,
+                room: room.RoomName,
                 startDate: firstBook.StartDate.ToString("yyyy-MM-dd HH:mm"),
                 endDate: firstBook.EndDate.ToString("yyyy-MM-dd HH:mm"),
-                cancellationCode: firstBook.UpdateCode
+                updateCode: firstBook.UpdateCode
             );
 
             TempData["SuccessMsg"] = "Booking created successfully";
