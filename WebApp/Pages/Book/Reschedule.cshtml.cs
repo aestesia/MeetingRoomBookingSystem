@@ -4,17 +4,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Context;
 using WebApp.Models;
+using WebApp.Pages.Base;
 using WebApp.Services;
 using WebApp.ViewModel;
 
 namespace WebApp.Pages.Book
 {
-    public class RescheduleModel : PageModel
+    public class RescheduleModel : BasePageModel
     {
         private readonly MyContext myContext;
         private readonly EmailService emailService;
 
         public RescheduleModel (MyContext myContext, EmailService emailService)
+            :base(myContext)
         {
             this.myContext = myContext;
             this.emailService = emailService;
@@ -22,19 +24,7 @@ namespace WebApp.Pages.Book
 
         [BindProperty]
         public RescheduleBookingViewModel BookingViewModel { get; set; }
-        public List<SelectListItem> RoomList { get; set; } = new();
-
-        private async Task LoadRoomListAsync()
-        {
-            RoomList = await myContext.Rooms
-                .OrderBy(r => r.RoomName)
-                .Select(r => new SelectListItem
-                {
-                    Value = r.Id.ToString(),
-                    Text = r.RoomName
-                })
-                .ToListAsync();
-        }
+        
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             await LoadRoomListAsync();
@@ -70,76 +60,6 @@ namespace WebApp.Pages.Book
             return Page();
         }
 
-        // Validate Booking
-        private async Task<(bool IsValid, string Error)> ValidateBookingsAsync(DateTime start, DateTime end, int roomId)
-        {
-
-            // Check Booking Buffer Time
-            bool isConflict = await myContext.Bookings.AnyAsync(x =>
-                x.RoomId == roomId && !x.isCancelled &&
-                (
-                    start < x.EndDate.AddMinutes(15) &&
-                    end > x.StartDate.AddMinutes(-15)
-                )
-            );
-            if (isConflict)
-                return (false, "Room is unavailable at the selected time due to an existing booking.");
-
-            // Check Prime Time
-            DayOfWeek day = start.DayOfWeek;
-            if (day >= DayOfWeek.Monday && day <= DayOfWeek.Friday)
-            {
-                var primeStart = start.Date.AddHours(9);
-                var primeEnd = start.Date.AddHours(12);
-                TimeSpan duration = end - start;
-                if (start >= primeStart && start < primeEnd)
-                {
-                    if (duration > TimeSpan.FromHours(1))
-                        return (false, "Booking during prime time (9 AM – 12 PM) cannot exceed 1 hour.");
-                }
-            }
-
-            return (true, null);
-        }
-
-        // Find Suggestion
-        private List<(DateTime Start, DateTime End)> FindNextAvail(int roomId, DateTime requestedStart, TimeSpan duration)
-        {
-            const int bufferMins = 15;
-            var buffer = TimeSpan.FromMinutes(bufferMins);
-            var suggestions = new List<(DateTime Start, DateTime End)>();
-
-            var dayStart = requestedStart.Date;
-            var dayEnd = dayStart.AddDays(1);
-
-            var bookings = myContext.Bookings
-                .Where(x => x.RoomId == roomId && !x.isCancelled && x.StartDate < dayEnd && x.EndDate > dayStart)
-                .OrderBy(x => x.StartDate)
-                .ToList();
-
-            DateTime gapStart = requestedStart + buffer;
-
-            foreach (var booking in bookings)
-            {
-                if (booking.StartDate > gapStart)
-                {
-                    var gapDuration = booking.StartDate - gapStart;
-                    if (gapDuration >= duration)
-                    {
-                        suggestions.Add((gapStart, gapStart + duration));
-                        if (suggestions.Count == 3)
-                            break;
-                    }
-                }
-                if (booking.EndDate > gapStart)
-                    gapStart = booking.EndDate;
-            }
-            if (suggestions.Count < 3 && dayEnd - gapStart >= duration)
-                suggestions.Add((gapStart, gapStart + duration));
-
-            return suggestions;
-        }
-
         public async Task<IActionResult> OnPostAsync()
         {
             await LoadRoomListAsync();
@@ -152,28 +72,15 @@ namespace WebApp.Pages.Book
                 .Include(x => x.Room)
                 .SingleOrDefaultAsync(x => x.BookingId == BookingViewModel.BookingId && !x.isCancelled);
 
-            // Invalid Start Date and End Date
-            if (BookingViewModel.EndDate <= BookingViewModel.StartDate)
-            {
-                ModelState.AddModelError(string.Empty, "Please enter valid Start Date and End Date");
-                return Page();
-            }
-
-            // Check Room Capacity
-            var room = await myContext.Rooms.FindAsync(BookingViewModel.RoomId);
-            if (room == null)
-            {
-                ModelState.AddModelError("BookingViewModel.RoomId", "Room does not exist.");
-                return Page();
-            }
-            if (BookingViewModel.NumOfAttendees > room.Capacity)
-            {
-                ModelState.AddModelError("BookingViewModel.NumOfAttendees", $"Number of attendees exceeds room capacity ({room.Capacity}).");
-                return Page();
-            }
-
-            var (isValid, errorMessage) = await ValidateBookingsAsync(BookingViewModel.StartDate, BookingViewModel.EndDate, BookingViewModel.RoomId);
+            // Validate Booking
+            var isValid = await ValidateBooking(BookingViewModel.StartDate, BookingViewModel.EndDate,
+                BookingViewModel.RoomId, BookingViewModel.NumOfAttendees);
             if (!isValid)
+                return Page();
+
+            // Validate occurences
+            var (isNotConflict, errorMessage) = await ValidateConflictAsync(BookingViewModel.StartDate, BookingViewModel.EndDate, BookingViewModel.RoomId);
+            if (!isNotConflict)
             {
                 var duration = BookingViewModel.EndDate - BookingViewModel.StartDate;
                 var suggestions = FindNextAvail(BookingViewModel.RoomId, BookingViewModel.StartDate, duration);
