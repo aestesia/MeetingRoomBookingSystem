@@ -1,5 +1,4 @@
-﻿using MailKit.Search;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Context;
 using WebApp.ViewModel;

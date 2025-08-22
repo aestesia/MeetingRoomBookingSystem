@@ -108,7 +108,7 @@ namespace WebApp.Pages.Book
             // Validate all occurences
             foreach (var (start, end) in occurrences) 
             {
-                var (isNotConflict, errorMessage) = await ValidateConflictAsync(start, end, BookingViewModel.RoomId);
+                var (isNotConflict, errorMessage) = await ValidateConflictAsync(start, end, 0, BookingViewModel.RoomId);
                 if (!isNotConflict)
                 {
                     var duration = end - start;

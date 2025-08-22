@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Context;
-using WebApp.Models;
 using WebApp.Pages.Base;
 using WebApp.Services;
 using WebApp.ViewModel;
@@ -83,7 +82,8 @@ namespace WebApp.Pages.Book
             }
 
             // Validate occurences
-            var (isNotConflict, errorMessage) = await ValidateConflictAsync(BookingViewModel.StartDate, BookingViewModel.EndDate, BookingViewModel.RoomId);
+            var (isNotConflict, errorMessage) = await ValidateConflictAsync(BookingViewModel.StartDate, 
+                BookingViewModel.EndDate, BookingViewModel.BookingId, BookingViewModel.RoomId);
             if (!isNotConflict)
             {
                 var duration = BookingViewModel.EndDate - BookingViewModel.StartDate;
@@ -116,7 +116,8 @@ namespace WebApp.Pages.Book
                 endDate: booking.EndDate.ToString("yyyy-MM-dd HH:mm")                
             );
 
-            return RedirectToPage("/Home/Index");
+            TempData["SuccessMsg"] = "Booking rescheduled successfully";
+            return RedirectToPage("Reschedule", new { id = BookingViewModel.BookingId });
         }
     }
 }

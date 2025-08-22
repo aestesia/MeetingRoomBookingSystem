@@ -91,11 +91,11 @@ namespace WebApp.Pages.Base
         }
 
         // Check Conflict
-        public async Task<(bool IsValid, string Error)> ValidateConflictAsync(DateTime start, DateTime end, int roomId)
+        public async Task<(bool IsValid, string Error)> ValidateConflictAsync(DateTime start, DateTime end, int bookingId, int roomId)
         {
             // Check Booking Buffer Time
             bool isConflict = await myContext.Bookings.AnyAsync(x =>
-                x.RoomId == roomId && !x.isCancelled &&
+                x.RoomId == roomId && !x.isCancelled && x.BookingId != bookingId &&
                 (
                     start < x.EndDate.AddMinutes(15) &&
                     end > x.StartDate.AddMinutes(-15)
