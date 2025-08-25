@@ -1,5 +1,6 @@
 ﻿@page
 @model Rooms.IndexModel
+@using WebApp.ViewModel
 @{
     ViewData["Title"] = "Room List";
 }
@@ -25,3 +26,14 @@
         }
     </tbody>
 </table>
+
+@await Html.PartialAsync("_Pagination", new PaginationViewModel
+{
+CurrentPage = Model.CurrentPage,
+TotalPages = Model.TotalPages,
+PageRoute = "Rooms",
+RouteValues = new Dictionary<string, object>
+    {
+        {"searchTerm", ""}
+    }
+})

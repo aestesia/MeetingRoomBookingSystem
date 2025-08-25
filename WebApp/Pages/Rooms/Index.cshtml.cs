@@ -16,9 +16,20 @@ namespace WebApp.Pages.Rooms
 
         public IList<Room> Rooms { get; set; }
 
-        public async Task OnGetAsync()
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
+
+        public async Task OnGetAsync(int pageNumber = 1)
         {
-            Rooms = await myContext.Rooms.ToListAsync();
+            int pageSize = 10;
+            int totalRooms = await myContext.Rooms.CountAsync();
+            TotalPages = (int)Math.Ceiling(totalRooms / (double)pageSize);
+            CurrentPage = pageNumber;
+
+            Rooms = await myContext.Rooms
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
     }
 }
